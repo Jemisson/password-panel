@@ -41,6 +41,20 @@ export default function SenhaPage() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
+useEffect(() => {
+  const ch = new BroadcastChannel("chamados");
+  ch.onmessage = (ev) => {
+    const data = ev.data as { type: string; all?: CallTicket[] };
+    if (data?.type === "NEW_TICKET" && Array.isArray(data.all)) {
+      setHistory(data.all);
+    }
+    if (data?.type === "CLEAR_ALL") {
+      setHistory([]);
+    }
+  };
+  return () => ch.close();
+}, []);
+
   const current = history[0];
   const last10 = useMemo(() => history.slice(1, 11), [history]);
 

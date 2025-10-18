@@ -18,3 +18,20 @@ export function readHistory(): CallTicket[] {
 export function writeHistory(next: CallTicket[]) {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
 }
+
+export function lastTicket(): CallTicket | undefined {
+  const h = readHistory();
+  return h[0];
+}
+
+export function toIntOrNull(v?: string): number | null {
+  if (!v) return null;
+  const n = Number.parseInt(v, 10);
+  return Number.isFinite(n) ? n : null;
+}
+
+export function nextNumberString(last?: string): string {
+  const n = toIntOrNull(last);
+  if (n === null) return "1";
+  return String(n + 1);
+}
