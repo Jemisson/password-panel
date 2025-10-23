@@ -17,14 +17,12 @@ export default function CallForm() {
   const inputNameRef = useRef<HTMLInputElement | null>(null);
   const channelRef = useRef<BroadcastChannel | null>(null);
 
-  // carrega inicial e cria canal
   useEffect(() => {
     setHistory(readHistory());
     channelRef.current = new BroadcastChannel("chamados");
     return () => channelRef.current?.close();
   }, []);
 
-  // ouvir updates de outras abas
   useEffect(() => {
     const ch = channelRef.current!;
     ch.onmessage = (ev) => {
@@ -41,7 +39,6 @@ export default function CallForm() {
     };
   }, []);
 
-  // fallback via storage
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === HISTORY_KEY) {
@@ -78,19 +75,16 @@ export default function CallForm() {
 
     saveTicket(ticket);
 
-    // limpa formulário e foca para próxima digitação
     setName("");
     setNumber("");
     inputNameRef.current?.focus();
   }
 
   function handleCallNext() {
-    // pega o último número e soma 1
     const last = lastTicket();
     const nextNum = nextNumberString(last?.number);
 
     const ticket: CallTicket = {
-      // usa o nome digitado se houver; senão, vazio
       name: name.trim() || "",
       number: nextNum,
       calledAt: new Date().toISOString(),
@@ -98,14 +92,12 @@ export default function CallForm() {
 
     saveTicket(ticket);
 
-    // limpa formulário
     setName("");
     setNumber("");
     inputNameRef.current?.focus();
   }
 
   function handleClearAll() {
-    // limpa localStorage e notifica painel
     localStorage.removeItem(HISTORY_KEY);
     setHistory([]);
     channelRef.current?.postMessage({ type: "CLEAR_ALL" });
@@ -115,15 +107,14 @@ export default function CallForm() {
 
   return (
     <div className="max-w-xl mx-auto p-6 space-y-6">
-      {/* Cabeçalho com último número + ações */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex-1">
-          <div className="text-sm text-gray-500">Último número chamado</div>
+          <div className="text-sm text-white">Último número chamado</div>
           <div className="text-4xl font-extrabold tracking-tight">
             {lastCalled?.number ?? "—"}
           </div>
           {lastCalled?.name ? (
-            <div className="text-sm text-gray-600">{lastCalled.name}</div>
+            <div className="text-sm text-white">{lastCalled.name}</div>
           ) : null}
         </div>
 
@@ -147,7 +138,6 @@ export default function CallForm() {
         </div>
       </div>
 
-      {/* Formulário */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <label className="block text-sm font-medium">Nome (opcional)</label>
